@@ -1,0 +1,5 @@
+.idea
+.bundle/
+log/*.log
+pkg/
+Gemfile.lock
