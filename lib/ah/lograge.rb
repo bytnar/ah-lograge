@@ -4,6 +4,8 @@ require 'ah/lograge/railtie'
 
 module Ah
   module Lograge
+    @@filter_params_block = nil
+    
     def self.filter_params(&block)
       @@filter_params_block = block
     end
