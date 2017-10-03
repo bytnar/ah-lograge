@@ -28,14 +28,26 @@ Ah::Lograge.filter_params do |params|
 end
 ```
 
-
-
 ## Sidekiq Statsd Middleware
+The middleware requires sidekiq and statsd-ruby to operate (it needs to be provided in application gemfile).
+It will report various sidekiq metrics via statsd. There is a penalty: job execution duration will be 0.08s longer (we can live with that).
+If statsd host fails it will not interrupt normal sidekiq operation.
 
+### Usage
+
+```ruby
+require 'ah/lograge/sidekiq_statsd_server_middleware'
+
+Sidekiq.configure_server do |config|
+  config.server_middleware do |chain|
+    chain.add Ah::SidekiqStatsdServerMiddleware, statsd: Statsd.new(Settings.statsd_host)
+  end
+end
+```
 
 
 ## Contributing
-Just create a PR & ping me.
+Just create a PR & ping #dev-room or our developers email.
 
 ## License
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
