@@ -1,16 +1,7 @@
 # Ah::Lograge
-Common initializer for Lograge across Airhelp Rails projects
-
-## Usage
-just install it. You can pass env variable `DISABLE_LOGRAGE` to disable it.
-
-## Custom params filtering
-add `config/initializers/lograge.rb` to your app with following:
-```ruby
-Ah::Lograge.filter_params do |params|
-  params.delete("unwanted")
-end
-```
+Common initializers for logging and monitoring across Airhelp Rails projects:
+* lograge - for readable rails http logs
+* sidekiq statsd middleware - for sidekiq stats
 
 ## Installation
 Add this line to your application's Gemfile:
@@ -23,6 +14,25 @@ And then execute:
 ```bash
 $ bundle
 ```
+
+## Lograge
+
+### Usage
+Just install it. You can pass env variable `DISABLE_LOGRAGE` to disable it.
+
+### Custom params filtering
+add `config/initializers/lograge.rb` to your app with following:
+```ruby
+Ah::Lograge.filter_params do |params|
+  params.delete("unwanted")
+end
+```
+
+
+
+## Sidekiq Statsd Middleware
+
+
 
 ## Contributing
 Just create a PR & ping me.
