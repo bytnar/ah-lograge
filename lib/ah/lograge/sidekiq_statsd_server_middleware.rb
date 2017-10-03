@@ -18,7 +18,7 @@ module Ah
         batch.increment(prefix(worker_name, 'failure'))
         raise e
       ensure
-        batch.timing(prefix(worker_name, 'duration'), time_now - start_time)
+        batch.timing(prefix(worker_name, 'duration'), time_diff_ms(time_now, start_time))
         queue_stats(batch, queue)
         send_global_stats(batch)
         batch.flush
@@ -60,6 +60,10 @@ module Ah
 
       def time_now
         Process.respond_to?(:clock_gettime) ? Process.clock_gettime(Process::CLOCK_MONOTONIC) : Time.now
+      end
+
+      def time_diff_ms(first_time, second_time)
+        ((first_time - second_time) * 1000).round
       end
     end
   end
