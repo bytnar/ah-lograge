@@ -1,3 +1,5 @@
+require 'rails/railtie'
+
 module Ah
   module Lograge
     class Railtie < ::Rails::Railtie
