@@ -40,7 +40,7 @@ require 'ah/lograge/sidekiq_statsd_server_middleware'
 
 Sidekiq.configure_server do |config|
   config.server_middleware do |chain|
-    chain.add Ah::SidekiqStatsdServerMiddleware, statsd: Statsd.new(Settings.statsd_host)
+    chain.add Ah::Lograge::SidekiqStatsdServerMiddleware, statsd: Statsd.new(Settings.statsd_host)
   end
 end
 ```
