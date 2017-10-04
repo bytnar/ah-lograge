@@ -5,9 +5,9 @@ module Ah
 
       def self.prepare_custom_options(event)
         {
-            params: prepare_params(event.payload[:params]),
-            exception: event.payload[:exception],
-            exception_object: event.payload[:exception_object]
+          params: prepare_params(event.payload[:params]),
+          exception: event.payload[:exception],
+          exception_object: event.payload[:exception_object]
         }
       end
 
@@ -21,15 +21,38 @@ module Ah
       end
 
       def self.serializable?(params)
+        deep_serialize(nil, params)
         params.to_json
         true
       rescue StandardError => e
         if defined? Airbrake
-          Airbrake.notify(e, error_message: 'params not serializable')
+          encoded_params = encode_string_proper_utf8(params.to_s)
+          Airbrake.notify(e, error_message: 'params not serializable', params: encoded_params)
         else
           Rails.logger.error(e)
         end
         false
+      end
+
+      def self.deep_serialize(parent, hash)
+        hash.each do |key, value|
+          if value.is_a?(Hash)
+            deep_serialize(key, value)
+          elsif value.is_a?(Array)
+            value.each { |val| deep_serialize(key, val) }
+          elsif value.is_a?(String)
+            hash[key] = encode_string_proper_utf8(value)
+          end
+        end
+      end
+
+      def self.encode_string_proper_utf8(str)
+        str.encode(
+          'UTF-8',
+          :invalid => :replace,
+          :undef => :replace,
+          :replace => '?'
+        )
       end
     end
   end
