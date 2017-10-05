@@ -21,7 +21,7 @@ module Ah
       end
 
       def self.serializable?(params)
-        deep_serialize(nil, params)
+        deep_encode(nil, params)
         params.to_json
         true
       rescue StandardError => e
@@ -34,12 +34,12 @@ module Ah
         false
       end
 
-      def self.deep_serialize(parent, hash)
+      def self.deep_encode(parent, hash)
         hash.each do |key, value|
           if value.is_a?(Hash)
-            deep_serialize(key, value)
+            deep_encode(key, value)
           elsif value.is_a?(Array)
-            value.each { |val| deep_serialize(key, val) }
+            value.each { |val| deep_encode(key, val) }
           elsif value.is_a?(ActionDispatch::Http::UploadedFile)
             hash[key] = {
               type: 'ActionDispatch::Http::UploadedFile',
