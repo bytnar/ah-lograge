@@ -5,9 +5,9 @@ module Ah
 
       def self.prepare_custom_options(event)
         {
-            params: prepare_params(event.payload[:params]),
-            exception: event.payload[:exception],
-            exception_object: event.payload[:exception_object]
+          params: prepare_params(event.payload[:params]),
+          exception: event.payload[:exception],
+          exception_object: event.payload[:exception_object]
         }
       end
 
@@ -17,19 +17,46 @@ module Ah
           ::Ah::Lograge.filter_params_block.(params)
         end
 
-        serializable?(params) ? params : { error: 'params not serializable' }
+        serializable?(params, event_params) ? params : { error: 'params not serializable' }
       end
 
-      def self.serializable?(params)
+      def self.serializable?(params, full_params = {})
+        deep_encode(nil, params)
         params.to_json
         true
       rescue StandardError => e
         if defined? Airbrake
-          Airbrake.notify(e, error_message: 'params not serializable')
+          Airbrake.notify(e, error_message: 'params not serializable', params: full_params.slice("controller", "action"))
         else
           Rails.logger.error(e)
         end
         false
+      end
+
+      def self.deep_encode(parent, hash)
+        hash.each do |key, value|
+          if value.is_a?(Hash)
+            deep_encode(key, value)
+          elsif value.is_a?(Array)
+            value.each { |val| deep_encode(key, val) }
+          elsif value.is_a?(ActionDispatch::Http::UploadedFile)
+            hash[key] = {
+              type: 'ActionDispatch::Http::UploadedFile',
+              name: encode_string_proper_utf8(value.original_filename),
+              size: value.size,
+              content_type: value.content_type
+            }
+          end
+        end
+      end
+
+      def self.encode_string_proper_utf8(str)
+        str.encode(
+          'UTF-8',
+          :invalid => :replace,
+          :undef => :replace,
+          :replace => '?'
+        )
       end
     end
   end
