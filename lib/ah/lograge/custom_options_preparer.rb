@@ -40,8 +40,13 @@ module Ah
             deep_serialize(key, value)
           elsif value.is_a?(Array)
             value.each { |val| deep_serialize(key, val) }
-          elsif value.is_a?(String)
-            hash[key] = encode_string_proper_utf8(value)
+          elsif value.is_a?(ActionDispatch::Http::UploadedFile)
+            hash[key] = {
+              type: 'ActionDispatch::Http::UploadedFile',
+              name: encode_string_proper_utf8(value.original_filename),
+              size: value.size,
+              content_type: value.content_type
+            }
           end
         end
       end
