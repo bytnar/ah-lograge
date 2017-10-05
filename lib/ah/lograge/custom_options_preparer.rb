@@ -17,17 +17,16 @@ module Ah
           ::Ah::Lograge.filter_params_block.(params)
         end
 
-        serializable?(params) ? params : { error: 'params not serializable' }
+        serializable?(params, event_params) ? params : { error: 'params not serializable' }
       end
 
-      def self.serializable?(params)
+      def self.serializable?(params, full_params = {})
         deep_encode(nil, params)
         params.to_json
         true
       rescue StandardError => e
         if defined? Airbrake
-          encoded_params = encode_string_proper_utf8(params.to_s)
-          Airbrake.notify(e, error_message: 'params not serializable', params: encoded_params)
+          Airbrake.notify(e, error_message: 'params not serializable', params: full_params.slice("controller", "action"))
         else
           Rails.logger.error(e)
         end
