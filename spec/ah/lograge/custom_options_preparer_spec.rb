@@ -44,5 +44,14 @@ describe Ah::Lograge::CustomOptionsPreparer do
         expect { params.to_json }.not_to raise_exception
       end
     end
+    describe 'Airbrake logging' do
+      let(:params) { super().merge(invalid: crazy_character) }
+      specify do
+        stub_const("Airbrake", Class)
+        full_params = { "controller"=>"a", "action"=>"b" }
+        expect(Airbrake).to receive(:notify).with(any_args, a_hash_including(params: full_params))
+        expect(described_class.serializable?(params, full_params)).to be_falsey
+      end
+    end
   end
 end
