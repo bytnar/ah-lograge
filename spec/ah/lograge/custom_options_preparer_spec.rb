@@ -23,6 +23,25 @@ describe Ah::Lograge::CustomOptionsPreparer do
         }
       )
     end
+    describe 'array params' do
+      let(:crazy_character) { "\x89".force_encoding('ASCII-8BIT') }
+      let(:tempfile) { Tempfile.new('uploaded_file').tap { |f| f.write(crazy_character); f.seek(0) } }
+      let(:uploaded_file_param) do
+        ActionDispatch::Http::UploadedFile.new(
+            tempfile: tempfile, filename: "some_temp_file.ext", type: "text/plain"
+        )
+      end
+      let(:params) do
+        {
+            language: ['pl', 'en', uploaded_file_param]
+        }
+      end
+      it 'handles UploadedFile inside Array' do
+        expect(described_class.serializable?(params)).to be_truthy
+        expect(params[:language]).to include('pl', 'en', a_kind_of(Hash))
+        expect(params[:language].last).to include(type: 'ActionDispatch::Http::UploadedFile')
+      end
+    end
     describe 'bad encoded file name' do
       let(:params) do
         {
