@@ -35,18 +35,24 @@ module Ah
 
       def self.deep_encode(parent, hash)
         hash.each do |key, value|
-          if value.is_a?(Hash)
-            deep_encode(key, value)
-          elsif value.is_a?(Array)
-            value.each { |val| deep_encode(key, val) }
-          elsif value.is_a?(ActionDispatch::Http::UploadedFile)
-            hash[key] = {
-              type: 'ActionDispatch::Http::UploadedFile',
-              name: encode_string_proper_utf8(value.original_filename),
-              size: value.size,
-              content_type: value.content_type
-            }
+          encode_value(hash, key, value)
+        end
+      end
+
+      def self.encode_value(hash, key, value)
+        if value.is_a?(Hash)
+          deep_encode(key, value)
+        elsif value.is_a?(Array)
+          value.each_with_index do |val,idx|
+            encode_value(value, idx, val)
           end
+        elsif value.is_a?(ActionDispatch::Http::UploadedFile)
+          hash[key] = {
+            type: 'ActionDispatch::Http::UploadedFile',
+            name: encode_string_proper_utf8(value.original_filename),
+            size: value.size,
+            content_type: value.content_type
+          }
         end
       end
 
