@@ -10,8 +10,6 @@ module Ah
         app.config.lograge.custom_options = lambda do |event|
           Ah::Lograge::CustomOptionsPreparer.prepare_custom_options(event)
         end
-
-        require 'ah/lograge/airbrake' if defined? Airbrake
       end
     end
   end
