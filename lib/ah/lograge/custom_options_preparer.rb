@@ -4,11 +4,15 @@ module Ah
       NOT_LOGGED_PARAMS = %w(controller action format utf8).freeze
 
       def self.prepare_custom_options(event)
-        {
+        params = {
           params: prepare_params(event.payload[:params]),
           exception: event.payload[:exception],
           exception_object: event.payload[:exception_object]
         }
+
+        params.merge!(Ah::Lograge.additional_custom_entries_block.(event)) if Ah::Lograge.additional_custom_entries_block
+
+        params
       end
 
       def self.prepare_params(event_params)
