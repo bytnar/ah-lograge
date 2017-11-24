@@ -28,6 +28,16 @@ Ah::Lograge.filter_params do |params|
 end
 ```
 
+### Custom payload entries adding
+
+in `config/initializers/lograge.rb` add something like:
+
+```ruby
+Ah::Lograge.additional_custom_entries do |event|
+  { something: event.payload[:something] }
+end
+```
+
 ## Sidekiq Statsd Middleware
 The middleware requires sidekiq and statsd-ruby to operate (it needs to be provided in application gemfile).
 It will report various sidekiq metrics via statsd. There is a penalty: job execution duration will be 0.08s longer (we can live with that).
