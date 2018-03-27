@@ -7,7 +7,7 @@ Common initializers for logging and monitoring across Airhelp Rails projects:
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'ah-lograge'
+gem 'ah-lograge', git: 'https://github.com/AirHelp/ah-lograge'
 ```
 
 And then execute:
