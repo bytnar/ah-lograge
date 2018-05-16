@@ -1,6 +1,8 @@
 require 'lograge'
 require 'ah/lograge/custom_options_preparer'
 require 'ah/lograge/railtie'
+require 'ah/lograge/audit_logger'
+require 'ah/lograge/audit_user_getter'
 
 module Ah
   module Lograge
