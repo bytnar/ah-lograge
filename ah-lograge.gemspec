@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "lograge"
   s.add_dependency "logstash-event"
+  s.add_runtime_dependency "activesupport"
 
   s.add_development_dependency "rspec"
   s.add_development_dependency "pry"
